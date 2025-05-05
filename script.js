@@ -65,6 +65,24 @@
         .then(result => console.log(result))
         .catch(error => console.error('Error:', error));
       }
+
+      function deleteClass(className) {
+        fetch('delete_class.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ className: className })
+        })
+        .then(response => response.text())
+        .then(result => {
+          console.log(result);
+          // Eliminar el elemento del DOM si la eliminación fue exitosa
+          const articleToDelete = document.querySelector(`article.draggable:has(.nombre:contains('${className}'))`);
+          if (articleToDelete) {
+            articleToDelete.remove();
+          }
+        })
+        .catch(error => console.error('Error:', error));
+      }
       
       // Set up event listeners once the DOM is fully loaded
       document.addEventListener("DOMContentLoaded", () => {
@@ -98,5 +116,14 @@
         saveBtn.addEventListener("click", (e) => {
           e.preventDefault();
           saveClasses();
+        });
+        document.querySelector("main").addEventListener("click", (e) => {
+          if (e.target.classList.contains("delete-btn")) {
+            const article = e.target.closest("article");
+            const className = article.querySelector(".nombre").textContent.trim();
+            if (confirm(`¿Estás seguro de que deseas eliminar la clase "${className}"?`)) {
+              deleteClass(className);
+            }
+          }
         });
       });

@@ -489,8 +489,13 @@ main {
   background: #fff;
   border: 2px solid lavenderblush;
   border-radius: 8px;
-  box-shadow: 0px 5px 25px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 5px 25px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  transition: all 0.3s ease;
+}
+.draggable:hover {
+  box-shadow: 0px 8px 30px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
 }
 .draggable .nombre {
   background: #c71585;
@@ -577,8 +582,9 @@ if ($msg): ?>
   <main>
     <!-- Draggable article template -->
     <template id="article-template">
-      <article class="draggable" style="left:250px; top:250px;">
+    <article class="draggable" style="left:250px; top:250px;">
         <div class="nombre" contenteditable="true" placeholder="Nombre de la clase">Clase</div>
+        <button class="delete-btn" style="position:absolute;top:5px;right:5px;background:red;color:white;border:none;border-radius:3px;padding:2px 5px;cursor:pointer;">X</button>
         <div class="propiedades">
           <p>Propiedades</p>
           <ul contenteditable="true" placeholder="Introduce tus propiedades...">
@@ -674,6 +680,24 @@ function saveClasses() {
   .catch(err => console.error("Error saving classes:", err));
 }
 
+// Array de colores pastel para las clases
+const coloresPastel = [
+    '#FFB3BA', // rosa pastel
+    '#BAFFC9', // verde pastel
+    '#BAE1FF', // azul pastel
+    '#FFFFBA', // amarillo pastel
+    '#FFE4B5', // melocotón
+    '#E6E6FA', // lavanda
+    '#F0FFF0', // miel rocío
+    '#FFF0F5', // rosa lavanda
+    '#F0FFFF', // azul claro
+    '#F5F5DC'  // beige
+  ];
+  // Función para obtener un color aleatorio
+  function obtenerColorAleatorio() {
+    return coloresPastel[Math.floor(Math.random() * coloresPastel.length)];
+  }
+
 // 5) Load classes for the selected project
 function loadClasses() {
   fetch('index.php?ajax=load_classes')
@@ -687,6 +711,9 @@ function loadClasses() {
           const tpl = document.getElementById("article-template");
           const clone = tpl.content.cloneNode(true);
           const article = clone.querySelector("article");
+
+          // Asignar un color aleatorio al cargar la clase
+          article.style.backgroundColor = obtenerColorAleatorio();
 
           // Class name
           article.querySelector(".nombre").textContent = cls.className;
@@ -729,11 +756,23 @@ document.addEventListener("DOMContentLoaded", () => {
   const saveBtn = document.getElementById("saveBtn");
   const main = document.querySelector("main");
 
+  main.addEventListener("click", (e) => {
+    if (e.target.classList.contains("delete-btn")) {
+      const article = e.target.closest("article");
+      if (article && confirm("¿Estás seguro de que deseas eliminar esta clase?")) {
+        article.remove();
+      }
+    }
+  });
+
   addBtn.addEventListener("click", e => {
     e.preventDefault();
     const tpl = document.getElementById("article-template");
     const clone = tpl.content.cloneNode(true);
     const article = clone.querySelector("article");
+    // Asignar un color aleatorio al fondo de la clase
+    const colorAleatorio = obtenerColorAleatorio();
+    article.style.backgroundColor = colorAleatorio;
     main.appendChild(article);
     makeDraggable(article);
   });

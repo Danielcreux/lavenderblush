@@ -22,18 +22,33 @@ if (!is_dir($dir)) {
 
 foreach ($classes as $classData) {
     $className = trim($classData['className']);
-
+    
     // Sanitize the class name: remove non-alphanumeric/underscore characters
     $sanitizedClassName = preg_replace('/[^A-Za-z0-9_]/', '', $className);
     if (empty($sanitizedClassName)) {
         $sanitizedClassName = 'UnnamedClass';
     }
-
+    
     // Build the file name (e.g., classes/MyClass.php)
     $fileName = $dir . '/' . $sanitizedClassName . '.php';
-
+    
     // Start building the PHP class code
     $classCode = "<?php\n";
+    
+    // Agregar comentarios de documentación con metadatos del diagrama
+    $classCode .= "/**\n";
+    $classCode .= " * @DiagramInfo\n";
+    if (isset($classData['position'])) {
+        $classCode .= " * @position " . json_encode($classData['position']) . "\n";
+    }
+    if (isset($classData['relationships'])) {
+        $classCode .= " * @relationships " . json_encode($classData['relationships']) . "\n";
+    }
+    if (isset($classData['stereotype'])) {
+        $classCode .= " * @stereotype " . $classData['stereotype'] . "\n";
+    }
+    $classCode .= " */\n";
+    
     $classCode .= "class $sanitizedClassName {\n\n";
 
     // Add properties (each property becomes a public member variable)
