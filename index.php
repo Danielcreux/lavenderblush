@@ -15,7 +15,7 @@ try {
 }
 
 if ($initDb) {
-    // Create schema on first run
+    // Create la base de datos donde almacenará los usuarios y los proyectos 
     $db->exec("
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -42,7 +42,7 @@ if ($initDb) {
         );
     ");
 
-    // Insert initial user (demo: plain password)
+    // Insert initial user plain password)
     $stmt = $db->prepare("INSERT INTO users (name, email, username, password) VALUES (?, ?, ?, ?)");
     $stmt->execute([
         'Joshue Daniel Freire Sánchez',
@@ -344,7 +344,7 @@ if (!logged_in_user_id()):
 </html>
 <?php
 exit;
-endif; // end if not logged in
+endif; 
 
 /****************************************************
  * 5) LOGGED IN => SHOW MAIN UI
